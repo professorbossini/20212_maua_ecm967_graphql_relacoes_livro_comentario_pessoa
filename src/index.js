@@ -2,6 +2,8 @@ import {
     GraphQLServer
 } from 'graphql-yoga'
 
+import { v4 as uuidv4 } from 'uuid'
+
 const pessoas = [
     {
         id: "1",
@@ -85,6 +87,11 @@ const typeDefs = `
         comentarios: [Comentario!]!
     }
 
+    type Mutation{
+        inserirPessoa (nome: String!, idade: Int):Pessoa!
+        inserirLivro (titulo: String!, edicao: Int!, autor: ID!): Livro!
+    }
+
 `
 
 const resolvers = {
@@ -97,6 +104,30 @@ const resolvers = {
         },
         comentarios(){
             return comentarios
+        }
+    },
+    Mutation: {
+        inserirPessoa (parent, args, ctx, info){
+            const pessoa = {
+                id: uuidv4(),
+                nome: args.nome,
+                idade: args.idade
+            }
+            pessoas.push(pessoa)
+            return pessoa
+        },
+        inserirLivro (parent, args, ctx, info){
+            const autorExiste = pessoas.some (p => p.id === args.autor)
+            if (!autorExiste)
+                throw new Error ("Autor não existe")
+            const livro = {
+                id: uuidv4(),
+                titulo: args.titulo,
+                edicao: args.edicao,
+                autor: args.autor
+            }
+            livros.push(livro)
+            return livro
         }
     },
     Livro: {
