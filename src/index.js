@@ -4,7 +4,7 @@ import {
 
 import { v4 as uuidv4 } from 'uuid'
 
-const pessoas = [
+let pessoas = [
     {
         id: "1",
         nome: "Cormen",
@@ -17,7 +17,7 @@ const pessoas = [
     }
 ]
 
-const livros = [
+let livros = [
     {
         id: '100',
         titulo: 'Introduction to Algorithms',
@@ -32,7 +32,7 @@ const livros = [
     }
 ]
 
-const comentarios = [
+let comentarios = [
     {
         id: '1001',
         texto: 'excelente',
@@ -88,9 +88,30 @@ const typeDefs = `
     }
 
     type Mutation{
-        inserirPessoa (nome: String!, idade: Int):Pessoa!
-        inserirLivro (titulo: String!, edicao: Int!, autor: ID!): Livro!
+        inserirPessoa (pessoa: InserirPessoaInput):Pessoa!
+        removerPessoa(id: ID!): Pessoa!
+        inserirLivro (livro: InserirLivroInput): Livro!        
+        inserirComentario(comentario: InserirComentarioInput): Comentario!
     }
+
+    input InserirComentarioInput {
+        texto: String!
+        nota: Int!
+        livro: ID!
+        autor: ID!
+    }
+
+    input InserirPessoaInput {
+        nome: String!
+        idade: Int
+    }
+
+    input InserirLivroInput {
+        titulo: String!
+        edicao: Int!
+        autor: ID!
+    }
+
 
 `
 
@@ -110,24 +131,54 @@ const resolvers = {
         inserirPessoa (parent, args, ctx, info){
             const pessoa = {
                 id: uuidv4(),
-                nome: args.nome,
-                idade: args.idade
+                nome: args.pessoa.nome,
+                idade: args.pessoa.idade
             }
             pessoas.push(pessoa)
             return pessoa
         },
+        removerPessoa (parent, args, ctx, info){
+            const indice = pessoas.findIndex(p => p.id === args.id)
+            if (indice < 0)
+                throw new Error ("Pessoa não existe")
+                //splice operar in-place
+            const removido = pessoas.splice(indice, 1)[0]
+            livros = livros.filter (livro => {
+                const remover = livro.autor === args.id
+                comentarios = comentarios.filter(c => remover && c.livro !== livro.id)
+                return !remover
+            })
+            comentarios = comentarios.filter(c => c.autor !== args.id)
+            return removido
+            
+        },
         inserirLivro (parent, args, ctx, info){
-            const autorExiste = pessoas.some (p => p.id === args.autor)
+            const autorExiste = pessoas.some (p => p.id === args.livro.autor)
             if (!autorExiste)
                 throw new Error ("Autor não existe")
             const livro = {
                 id: uuidv4(),
-                titulo: args.titulo,
-                edicao: args.edicao,
-                autor: args.autor
+                titulo: args.livro.titulo,
+                edicao: args.livro.edicao,
+                autor: args.livro.autor
             }
             livros.push(livro)
             return livro
+        },
+        inserirComentario (parent, args, ctx, info){
+            const pessoaExiste = pessoas.some(p => p.id === args.comentario.autor)
+            const livroExiste = livros.some(l => l.id === args.comentario.livro)
+            if (!pessoaExiste || !livroExiste)
+                throw new Error ("Autor e/ou Livro inexistente(s)")
+            const comentario = {
+                id: uuidv4(),
+                texto: args.comentario.texto,
+                nota: args.comentario.nota,
+                livro: args.comentario.livro,
+                autor: args.comentario.autor
+            }
+            comentarios.push(comentario)
+            return comentario
         }
     },
     Livro: {
