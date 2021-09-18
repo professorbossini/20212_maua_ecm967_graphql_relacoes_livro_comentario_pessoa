@@ -1,0 +1,58 @@
+    
+type Pessoa {
+        id: ID!
+        nome: String!
+        idade: Int
+        livros: [Livro!]!
+        comentarios: [Comentario!]!
+    }
+
+    type Livro{
+        id: ID!
+        titulo: String!
+        edicao: Int!
+        autor: Pessoa!
+        comentarios: [Comentario!]!
+    }
+
+    type Comentario {
+        id: ID!
+        texto: String!
+        nota: Int!
+        livro: Livro!
+        autor: Pessoa!
+    }
+
+    type Query {
+        livros: [Livro!]!
+        pessoas: [Pessoa!]!
+        comentarios: [Comentario!]!
+    }
+
+    type Mutation{
+        inserirPessoa (pessoa: InserirPessoaInput):Pessoa!
+        removerPessoa(id: ID!): Pessoa!
+        inserirLivro (livro: InserirLivroInput): Livro!
+        removerLivro (id: ID!): Livro!        
+        inserirComentario(comentario: InserirComentarioInput): Comentario!
+        removerComentario (id: ID!): Comentario!
+    }
+
+    input InserirComentarioInput {
+        texto: String!
+        nota: Int!
+        livro: ID!
+        autor: ID!
+    }
+
+    input InserirPessoaInput {
+        nome: String!
+        idade: Int
+    }
+
+    input InserirLivroInput {
+        titulo: String!
+        edicao: Int!
+        autor: ID!
+    }
+
