@@ -1,58 +1,79 @@
-    
 type Pessoa {
-        id: ID!
-        nome: String!
-        idade: Int
-        livros: [Livro!]!
-        comentarios: [Comentario!]!
-    }
+  id: ID!
+  nome: String!
+  idade: Int
+  livros: [Livro!]!
+  comentarios: [Comentario!]!
+}
 
-    type Livro{
-        id: ID!
-        titulo: String!
-        edicao: Int!
-        autor: Pessoa!
-        comentarios: [Comentario!]!
-    }
+type Livro {
+  id: ID!
+  titulo: String!
+  edicao: Int!
+  autor: Pessoa!
+  comentarios: [Comentario!]!
+}
 
-    type Comentario {
-        id: ID!
-        texto: String!
-        nota: Int!
-        livro: Livro!
-        autor: Pessoa!
-    }
+type Comentario {
+  id: ID!
+  texto: String!
+  nota: Int!
+  livro: Livro!
+  autor: Pessoa!
+}
 
-    type Query {
-        livros: [Livro!]!
-        pessoas: [Pessoa!]!
-        comentarios: [Comentario!]!
-    }
+type Query {
+  livros: [Livro!]!
+  pessoas: [Pessoa!]!
+  comentarios: [Comentario!]!
+}
 
-    type Mutation{
-        inserirPessoa (pessoa: InserirPessoaInput):Pessoa!
-        removerPessoa(id: ID!): Pessoa!
-        inserirLivro (livro: InserirLivroInput): Livro!
-        removerLivro (id: ID!): Livro!        
-        inserirComentario(comentario: InserirComentarioInput): Comentario!
-        removerComentario (id: ID!): Comentario!
-    }
+type Mutation {
+  inserirPessoa(pessoa: InserirPessoaInput): Pessoa!
+  removerPessoa(id: ID!): Pessoa!
+  atualizarPessoa (id: ID!, pessoa: AtualizarPessoaInput!): Pessoa!
+  inserirLivro(livro: InserirLivroInput): Livro!
+  removerLivro(id: ID!): Livro!
+  atualizarLivro (id: ID!, livro: AtualizarLivroInput!): Livro!
+  inserirComentario(comentario: InserirComentarioInput): Comentario!
+  removerComentario(id: ID!): Comentario!
+  atualizarComentario(id: ID!, comentario: AtualizarComentarioInput!): Comentario!
+}
 
-    input InserirComentarioInput {
-        texto: String!
-        nota: Int!
-        livro: ID!
-        autor: ID!
-    }
+type Subscription {
+  dado: Int!
+  comentario (idLivro: ID!): Comentario!
+}
 
-    input InserirPessoaInput {
-        nome: String!
-        idade: Int
-    }
+input InserirComentarioInput {
+  texto: String!
+  nota: Int!
+  livro: ID!
+  autor: ID!
+}
 
-    input InserirLivroInput {
-        titulo: String!
-        edicao: Int!
-        autor: ID!
-    }
+input AtualizarComentarioInput {
+  texto: String
+  nota: Int
+}
 
+input InserirPessoaInput {
+  nome: String!
+  idade: Int
+}
+
+input AtualizarPessoaInput {
+  nome: String
+  idade: Int
+}
+
+input InserirLivroInput {
+  titulo: String!
+  edicao: Int!
+  autor: ID!
+}
+
+input AtualizarLivroInput{
+  titulo: String
+  edicao: Int
+}
