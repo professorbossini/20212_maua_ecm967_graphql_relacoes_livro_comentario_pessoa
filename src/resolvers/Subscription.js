@@ -16,6 +16,11 @@ const Subscription = {
                 throw new Error ("Livro não existe")
             return ctx.pubSub.asyncIterator(`comentario ${args.idLivro}`)
         }
+    },
+    livro: {
+        subscribe(parent, args, ctx, info){
+            return ctx.pubSub.asyncIterator('livro')
+        }
     }
 }
 

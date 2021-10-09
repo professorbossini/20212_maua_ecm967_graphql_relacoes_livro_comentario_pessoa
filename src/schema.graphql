@@ -43,6 +43,7 @@ type Mutation {
 type Subscription {
   dado: Int!
   comentario (idLivro: ID!): Comentario!
+  livro: LivroSubscriptionPayload!
 }
 
 input InserirComentarioInput {
@@ -76,4 +77,9 @@ input InserirLivroInput {
 input AtualizarLivroInput{
   titulo: String
   edicao: Int
+}
+
+type LivroSubscriptionPayload{
+  mutation: String!
+  data: Livro!
 }
